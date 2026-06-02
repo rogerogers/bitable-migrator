@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=../bitable.schema.json
+
+app_token: "appbcbWCzen6D8dezhoCH2RpMAh"
+tables:
+  - table_id: "tblsRc9GRRXKqhvW"
+    name: "User Table"
+    fields:
+      - name: "Full Name"
+        type: "Text"
+      - name: "nihao"
+        type: "MultiSelect"
+      - name: "Age"
+        type: "Number"
+      - name: "Role"
+        type: "SingleSelect"
+        property:
+          options:
+            - name: "Admin"
+            - name: "User"
+      - name: "Avatar"
+        type: "Attachment"
+      - name: "Skills"
+        type: "MultiSelect"

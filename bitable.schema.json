@@ -1,0 +1,155 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Lark Bitable Schema Configuration",
+  "description": "JSON Schema for Bitable declarative YAML migration tool (bitable.yaml)",
+  "type": "object",
+  "required": [
+    "app_token",
+    "tables"
+  ],
+  "properties": {
+    "app_token": {
+      "type": "string",
+      "description": "The unique token of the Lark Bitable App (Base)."
+    },
+    "tables": {
+      "type": "array",
+      "description": "List of Bitable data tables to manage.",
+      "items": {
+        "type": "object",
+        "required": [
+          "table_id",
+          "name",
+          "fields"
+        ],
+        "properties": {
+          "table_id": {
+            "type": "string",
+            "description": "The unique ID of the data table (e.g. tblsRc9GRRXKqhvW)."
+          },
+          "name": {
+            "type": "string",
+            "description": "The display name of the data table."
+          },
+          "fields": {
+            "type": "array",
+            "description": "List of fields inside this table.",
+            "items": {
+              "type": "object",
+              "required": [
+                "name",
+                "type"
+              ],
+              "properties": {
+                "field_id": {
+                  "type": "string",
+                  "description": "The unique ID of the field. Automatically written back by the migrator tool upon sync. Do not fill manually for new fields."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "The display name of the field."
+                },
+                "type": {
+                  "type": "string",
+                  "description": "The Bitable field type name (English)",
+                  "enum": [
+                    "Text",
+                    "Multiline",
+                    "Number",
+                    "SingleSelect",
+                    "Single option",
+                    "MultiSelect",
+                    "Multiple options",
+                    "Date",
+                    "Checkbox",
+                    "User",
+                    "Person",
+                    "Phone",
+                    "PhoneNumber",
+                    "Url",
+                    "Link",
+                    "Attachment",
+                    "SingleLink",
+                    "One-way link",
+                    "Formula",
+                    "DuplexLink",
+                    "Two-way link",
+                    "Location",
+                    "GroupChat",
+                    "group",
+                    "CreatedTime",
+                    "Date created",
+                    "ModifiedTime",
+                    "Last modified date",
+                    "CreatedUser",
+                    "Created by",
+                    "ModifiedUser",
+                    "Modified by",
+                    "AutoNumber",
+                    "AutoSerial"
+                  ]
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Optional description for this field. Will be displayed in field description on Lark Bitable."
+                },
+                "property": {
+                  "type": "object",
+                  "description": "Type-specific field property settings.",
+                  "properties": {
+                    "multiple": {
+                      "type": "boolean",
+                      "description": "Whether multiple values/selections are allowed (applies to User/Member fields, or Links)."
+                    },
+                    "table_id": {
+                      "type": "string",
+                      "description": "The target Table ID for single/duplex association fields."
+                    },
+                    "formatter": {
+                      "type": "string",
+                      "description": "The display formatter for Number or Formula fields (e.g., '0', '0.00', '0%')."
+                    },
+                    "date_formatter": {
+                      "type": "string",
+                      "description": "The date format for Date fields (e.g., 'yyyy/MM/dd HH:mm')."
+                    },
+                    "auto_fill": {
+                      "type": "boolean",
+                      "description": "Whether Date field should auto-fill current time for new records."
+                    },
+                    "options": {
+                      "type": "array",
+                      "description": "Options list for SingleSelect or MultiSelect fields.",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "name"
+                        ],
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "description": "Option ID. Generated by Bitable online. Do not set manually."
+                          },
+                          "name": {
+                            "type": "string",
+                            "description": "The display name/label of the option."
+                          },
+                          "color": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 54,
+                            "description": "Color ID index (0 to 54) for option tag."
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

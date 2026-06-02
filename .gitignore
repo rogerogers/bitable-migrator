@@ -1,0 +1,13 @@
+# Binaries and build outputs
+bin/*
+!bin/.gitkeep
+*.exe
+*.test
+
+# Custom configurations and secrets (should not be pushed to git)
+bitable.yaml
+bitable.yml
+.env
+
+# Temp files
+*.tmp
