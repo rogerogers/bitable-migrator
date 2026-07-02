@@ -86,7 +86,44 @@
                     "ModifiedUser",
                     "Modified by",
                     "AutoNumber",
-                    "AutoSerial"
+                    "AutoSerial",
+                    "Button",
+                    "Lookup",
+                    "Stage"
+                  ]
+                },
+                "ui_type": {
+                  "type": "string",
+                  "description": "The UI display type of the field.",
+                  "enum": [
+                    "Text",
+                    "Email",
+                    "Barcode",
+                    "Number",
+                    "Progress",
+                    "Currency",
+                    "Rating",
+                    "SingleSelect",
+                    "MultiSelect",
+                    "DateTime",
+                    "Checkbox",
+                    "User",
+                    "GroupChat",
+                    "Stage",
+                    "Phone",
+                    "Url",
+                    "Attachment",
+                    "SingleLink",
+                    "Formula",
+                    "Lookup",
+                    "DuplexLink",
+                    "Location",
+                    "CreatedTime",
+                    "ModifiedTime",
+                    "CreatedUser",
+                    "ModifiedUser",
+                    "AutoNumber",
+                    "Button"
                   ]
                 },
                 "description": {
