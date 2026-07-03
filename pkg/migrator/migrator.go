@@ -233,17 +233,14 @@ func (m *Migrator) Sync(path string, dryRun bool) error {
 				log.Printf("[Create] Field '%s' (Type %s) does not exist online. Creating...", field.Name, field.Type)
 				if !dryRun {
 					prop := toLarkProperty(field.Property)
-					builder := larkbitable.NewAppTableFieldBuilder().
+					reqField := larkbitable.NewAppTableFieldBuilder().
 						FieldName(field.Name).
 						Type(int(field.Type)).
 						Property(prop).
 						Description(larkbitable.NewAppTableFieldDescriptionBuilder().
 							Text(field.Description).
-							Build())
-					if field.UiType != "" {
-						builder.UiType(field.UiType)
-					}
-					reqField := builder.Build()
+							Build()).
+						Build()
 
 					req := larkbitable.NewCreateAppTableFieldReqBuilder().
 						AppToken(config.AppToken).
@@ -286,17 +283,9 @@ func (m *Migrator) Sync(path string, dryRun bool) error {
 					onlineType = *matchedOnline.Type
 				}
 				onlineDesc := getDescriptionText(matchedOnline.Description)
-				onlineUiType := ""
-				if matchedOnline.UiType != nil {
-					onlineUiType = *matchedOnline.UiType
-				}
 
 				if onlineName != field.Name {
 					log.Printf("[Update] Field '%s' will be renamed online to '%s'", onlineName, field.Name)
-					needsUpdate = true
-				}
-				if field.UiType != "" && onlineUiType != field.UiType {
-					log.Printf("[Update] Field '%s' ui_type will change from '%s' to '%s'", field.Name, onlineUiType, field.UiType)
 					needsUpdate = true
 				}
 				if onlineType != int(field.Type) {
@@ -316,17 +305,14 @@ func (m *Migrator) Sync(path string, dryRun bool) error {
 					log.Printf("[Update] Field '%s' (%s) properties differ. Updating...", field.Name, field.FieldID)
 					if !dryRun {
 						prop := toLarkProperty(field.Property)
-						builder := larkbitable.NewAppTableFieldBuilder().
+						reqField := larkbitable.NewAppTableFieldBuilder().
 							FieldName(field.Name).
 							Type(int(field.Type)).
 							Property(prop).
 							Description(larkbitable.NewAppTableFieldDescriptionBuilder().
 								Text(field.Description).
-								Build())
-						if field.UiType != "" {
-							builder.UiType(field.UiType)
-						}
-						reqField := builder.Build()
+								Build()).
+							Build()
 
 						req := larkbitable.NewUpdateAppTableFieldReqBuilder().
 							AppToken(config.AppToken).
@@ -387,9 +373,6 @@ func (m *Migrator) Sync(path string, dryRun bool) error {
 		}
 		if f.Type != nil {
 			fieldConf.Type = FieldType(*f.Type)
-		}
-		if f.UiType != nil {
-			fieldConf.UiType = *f.UiType
 		}
 		fieldConf.Description = getDescriptionText(f.Description)
 
