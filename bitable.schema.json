@@ -25,7 +25,7 @@
         "properties": {
           "table_id": {
             "type": "string",
-            "description": "The unique ID of the data table (e.g. tblsRc9GRRXKqhvW)."
+            "description": "The unique ID of the data table (e.g. YOUR_TABLE_ID)."
           },
           "name": {
             "type": "string",
@@ -86,7 +86,44 @@
                     "ModifiedUser",
                     "Modified by",
                     "AutoNumber",
-                    "AutoSerial"
+                    "AutoSerial",
+                    "Button",
+                    "Lookup",
+                    "Stage"
+                  ]
+                },
+                "ui_type": {
+                  "type": "string",
+                  "description": "The UI display type of the field.",
+                  "enum": [
+                    "Text",
+                    "Email",
+                    "Barcode",
+                    "Number",
+                    "Progress",
+                    "Currency",
+                    "Rating",
+                    "SingleSelect",
+                    "MultiSelect",
+                    "DateTime",
+                    "Checkbox",
+                    "User",
+                    "GroupChat",
+                    "Stage",
+                    "Phone",
+                    "Url",
+                    "Attachment",
+                    "SingleLink",
+                    "Formula",
+                    "Lookup",
+                    "DuplexLink",
+                    "Location",
+                    "CreatedTime",
+                    "ModifiedTime",
+                    "CreatedUser",
+                    "ModifiedUser",
+                    "AutoNumber",
+                    "Button"
                   ]
                 },
                 "description": {
@@ -139,6 +176,95 @@
                             "minimum": 0,
                             "maximum": 54,
                             "description": "Color ID index (0 to 54) for option tag."
+                          }
+                        }
+                      }
+                    },
+                    "allowed_edit_modes": {
+                      "type": "object",
+                      "description": "Allowed edit modes for Barcode fields.",
+                      "properties": {
+                        "manual": {
+                          "type": "boolean",
+                          "description": "Whether manual input is allowed."
+                        },
+                        "scan": {
+                          "type": "boolean",
+                          "description": "Whether scan input is allowed."
+                        }
+                      }
+                    },
+                    "min": {
+                      "type": "number",
+                      "description": "Minimum value for Progress or Rating fields."
+                    },
+                    "max": {
+                      "type": "number",
+                      "description": "Maximum value for Progress or Rating fields."
+                    },
+                    "range_customize": {
+                      "type": "boolean",
+                      "description": "Whether to allow custom range for Progress fields."
+                    },
+                    "currency_code": {
+                      "type": "string",
+                      "description": "Currency code (e.g., 'CNY', 'USD') for Currency fields."
+                    },
+                    "rating": {
+                      "type": "object",
+                      "description": "Rating settings for Rating fields.",
+                      "properties": {
+                        "symbol": {
+                          "type": "string",
+                          "description": "Rating symbol (e.g., 'star', 'heart')."
+                        }
+                      }
+                    },
+                    "back_field_name": {
+                      "type": "string",
+                      "description": "The back field name for DuplexLink fields."
+                    },
+                    "formula_expression": {
+                      "type": "string",
+                      "description": "The formula expression for Formula fields."
+                    },
+                    "location": {
+                      "type": "object",
+                      "description": "Location settings for Location fields.",
+                      "properties": {
+                        "input_type": {
+                          "type": "string",
+                          "description": "Location input limit type ('only_mobile' or 'not_limit')."
+                        }
+                      }
+                    },
+                    "auto_serial": {
+                      "type": "object",
+                      "description": "Auto serial settings for AutoNumber fields.",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "description": "Auto number type ('custom' or 'auto_increment_number')."
+                        },
+                        "reformat_existing_records": {
+                          "type": "boolean",
+                          "description": "Whether to reformat existing records."
+                        },
+                        "options": {
+                          "type": "array",
+                          "description": "Custom numbering rules.",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "type": {
+                                "type": "string",
+                                "description": "Rule type ('system_number', 'fixed_text', or 'created_time')."
+                              },
+                              "value": {
+                                "type": "string",
+                                "description": "Rule value."
+                              }
+                            }
                           }
                         }
                       }

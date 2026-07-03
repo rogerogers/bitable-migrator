@@ -41,9 +41,9 @@ To enable rich autocomplete prompts, hover tooltips, and validation in VS Code, 
 ```yaml
 # yaml-language-server: $schema=./bitable.schema.json
 
-app_token: "appbcbWCzen6D8dezhoCH2RpMAh"
+app_token: "YOUR_APP_TOKEN"
 tables:
-  - table_id: "tblsRc9GRRXKqhvW"
+  - table_id: "YOUR_TABLE_ID"
     name: "User Table"
     fields:
       - name: "Full Name"

@@ -27,6 +27,7 @@ type FieldConfig struct {
 	Type        FieldType              `yaml:"type"`
 	Description string                 `yaml:"description,omitempty"`
 	Property    map[string]interface{} `yaml:"property,omitempty"`
+	UiType      string                 `yaml:"ui_type,omitempty"`
 }
 
 // FieldType is a custom type to handle both string and integer representation of Bitable Field Types
@@ -44,15 +45,18 @@ var typeToString = map[int]string{
 	15:   "Url",
 	17:   "Attachment",
 	18:   "SingleLink",
+	19:   "Lookup",
 	20:   "Formula",
 	21:   "DuplexLink",
 	22:   "Location",
 	23:   "GroupChat",
+	24:   "Stage",
 	1001: "CreatedTime",
 	1002: "ModifiedTime",
 	1003: "CreatedUser",
 	1004: "ModifiedUser",
 	1005: "AutoNumber",
+	3001: "Button",
 }
 
 var stringToType = map[string]int{
@@ -85,6 +89,7 @@ var stringToType = map[string]int{
 	"location":     22,
 	"groupchat":    23,
 	"group":        23,
+	"stage":        24,
 	"createdtime":  1001,
 	"date created": 1001,
 	"createdtimefield": 1001,
@@ -99,6 +104,8 @@ var stringToType = map[string]int{
 	"modifieduserfield": 1004,
 	"autonumber":   1005,
 	"autoserial":   1005,
+	"button":       3001,
+	"lookup":       19,
 }
 
 // UnmarshalYAML implements Custom YAML parsing for FieldType
