@@ -64,6 +64,44 @@ func (m *Migrator) SaveConfig(path string, config *BitableConfig) error {
 	return nil
 }
 
+// FetchOnlineTables retrieves the list of tables for a bitable on Feishu (handling pagination)
+func (m *Migrator) FetchOnlineTables(appToken string) ([]*larkbitable.AppTable, error) {
+	var allTables []*larkbitable.AppTable
+	var pageToken string
+	pageSize := 100 // Request maximum of 100 items per page to reduce API calls
+
+	for {
+		reqBuilder := larkbitable.NewListAppTableReqBuilder().
+			AppToken(appToken).
+			PageSize(pageSize)
+
+		if pageToken != "" {
+			reqBuilder.PageToken(pageToken)
+		}
+
+		req := reqBuilder.Build()
+		resp, err := m.Client.Bitable.AppTable.List(context.Background(), req)
+		if err != nil {
+			return nil, err
+		}
+		if !resp.Success() {
+			return nil, fmt.Errorf("lark api error: code=%d, msg=%s", resp.Code, resp.Msg)
+		}
+
+		if resp.Data != nil && resp.Data.Items != nil {
+			allTables = append(allTables, resp.Data.Items...)
+		}
+
+		// Exit loop if no more pages are available
+		if resp.Data == nil || resp.Data.HasMore == nil || !*resp.Data.HasMore || resp.Data.PageToken == nil || *resp.Data.PageToken == "" {
+			break
+		}
+		pageToken = *resp.Data.PageToken
+	}
+
+	return allTables, nil
+}
+
 // FetchOnlineFields retrieves the list of fields for a table on Feishu (handling pagination)
 func (m *Migrator) FetchOnlineFields(appToken, tableID string) ([]*larkbitable.AppTableFieldForList, error) {
 	var allFields []*larkbitable.AppTableFieldForList
@@ -190,10 +228,49 @@ func (m *Migrator) Sync(path string, dryRun bool) error {
 
 	configUpdated := false
 
+	log.Printf("[Info] Fetching tables for app '%s'...", config.AppToken)
+	onlineTables, err := m.FetchOnlineTables(config.AppToken)
+	if err != nil {
+		return fmt.Errorf("failed to fetch online tables: %w", err)
+	}
+
+	onlineTablesMap := make(map[string]*larkbitable.AppTable)
+	for _, t := range onlineTables {
+		if t.TableId != nil {
+			onlineTablesMap[*t.TableId] = t
+		}
+	}
+
 	for tIdx, table := range config.Tables {
 		if table.TableID == "" {
 			log.Printf("[Warning] Table %s is missing table_id, skipping.", table.Name)
 			continue
+		}
+
+		if onlineTable, ok := onlineTablesMap[table.TableID]; ok {
+			if onlineTable.Name != nil && *onlineTable.Name != table.Name {
+				log.Printf("[Update] Table '%s' will be renamed online to '%s'", *onlineTable.Name, table.Name)
+				if !dryRun {
+					req := larkbitable.NewPatchAppTableReqBuilder().
+						AppToken(config.AppToken).
+						TableId(table.TableID).
+						Body(larkbitable.NewPatchAppTableReqBodyBuilder().
+							Name(table.Name).
+							Build()).
+						Build()
+
+					resp, err := m.Client.Bitable.AppTable.Patch(context.Background(), req)
+					if err != nil {
+						return fmt.Errorf("failed to rename table %s: %w", table.Name, err)
+					}
+					if !resp.Success() {
+						return fmt.Errorf("failed to rename table %s: code=%d, msg=%s", table.Name, resp.Code, resp.Msg)
+					}
+					log.Printf("[Success] Table renamed successfully to '%s'", table.Name)
+				}
+			}
+		} else {
+			log.Printf("[Warning] Table %s (%s) does not exist online.", table.Name, table.TableID)
 		}
 
 		log.Printf("[Info] Fetching fields for table '%s' (%s)...", table.Name, table.TableID)
@@ -368,7 +445,23 @@ func (m *Migrator) Sync(path string, dryRun bool) error {
 
 // Pull generates a new yaml schema from the online multi-dimensional table
 	func (m *Migrator) Pull(appToken, tableID, outputPath string) error {
-	log.Printf("[Pull] Fetching schema for app: %s, table: %s...", appToken, tableID)
+	log.Printf("[Pull] Fetching tables for app: %s...", appToken)
+	tables, err := m.FetchOnlineTables(appToken)
+	if err != nil {
+		return err
+	}
+
+	tableName := "Pulled Table"
+	for _, t := range tables {
+		if t.TableId != nil && *t.TableId == tableID {
+			if t.Name != nil {
+				tableName = *t.Name
+			}
+			break
+		}
+	}
+
+	log.Printf("[Pull] Fetching schema for app: %s, table: %s (%s)...", appToken, tableID, tableName)
 	fields, err := m.FetchOnlineFields(appToken, tableID)
 	if err != nil {
 		return err
@@ -420,7 +513,7 @@ func (m *Migrator) Sync(path string, dryRun bool) error {
 		Tables: []TableConfig{
 			{
 				TableID: tableID,
-				Name:    "Pulled Table",
+				Name:    tableName,
 				Fields:  localFields,
 			},
 		},
