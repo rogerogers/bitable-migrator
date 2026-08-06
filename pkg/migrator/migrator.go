@@ -1,6 +1,7 @@
 package migrator
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -45,13 +46,17 @@ func (m *Migrator) LoadConfig(path string) (*BitableConfig, error) {
 
 // SaveConfig writes the BitableConfig back to the yaml file atomically
 func (m *Migrator) SaveConfig(path string, config *BitableConfig) error {
-	data, err := yaml.Marshal(config)
+	var buf bytes.Buffer
+	enc := yaml.NewEncoder(&buf)
+	enc.SetIndent(2)
+	err := enc.Encode(config)
 	if err != nil {
 		return err
 	}
+	enc.Close()
 
 	tempFile := path + ".tmp"
-	err = ioutil.WriteFile(tempFile, data, 0644)
+	err = ioutil.WriteFile(tempFile, buf.Bytes(), 0644)
 	if err != nil {
 		return err
 	}
@@ -525,12 +530,16 @@ func (m *Migrator) Sync(path string, dryRun bool) error {
 		os.MkdirAll(dir, 0755)
 	}
 
-	data, err := yaml.Marshal(config)
+	var buf bytes.Buffer
+	enc := yaml.NewEncoder(&buf)
+	enc.SetIndent(2)
+	err = enc.Encode(config)
 	if err != nil {
 		return err
 	}
+	enc.Close()
 
-	err = ioutil.WriteFile(outputPath, data, 0644)
+	err = ioutil.WriteFile(outputPath, buf.Bytes(), 0644)
 	if err != nil {
 		return err
 	}
